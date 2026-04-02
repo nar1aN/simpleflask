@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Результат анализа </h1>
+  
+  <p class="hint">
+    FIGI / instrument_id: <b>{{ instrument_id }}</b> ·
+    дней: <b>{{ days_back }}</b> ·
+    интервал: <b>{{ interval }}</b> ·
+    свечей: <b>{{ n }}</b> ·
+    SDK: <b>{{ sdk }}</b>
+  </p>
+
+  <!-- Блок статистики (НОВЫЙ) -->
+  <div class="card">
+    <h3>📈 Статистика по инструменту</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+      <div style="padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
+        <div style="font-size: 12px; color: #666;">Доходность</div>
+        <div style="font-size: 24px; font-weight: bold; color: {% if statistics.total_return > 0 %}#28a745{% else %}#dc3545{% endif %};">
+          {{ statistics.total_return }}%
+        </div>
+      </div>
+      
+      <div style="padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
+        <div style="font-size: 12px; color: #666;">Волатильность</div>
+        <div style="font-size: 24px; font-weight: bold;">{{ statistics.volatility }}%</div>
+      </div>
+      
+      <div style="padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #ffc107;">
+        <div style="font-size: 12px; color: #666;">Макс. цена</div>
+        <div style="font-size: 24px; font-weight: bold;">{{ statistics.max_price }}</div>
+        <div style="font-size: 11px; color: #666;">{{ statistics.max_price_date }}</div>
+      </div>
+      
+      <div style="padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #17a2b8;">
+        <div style="font-size: 12px; color: #666;">Мин. цена</div>
+        <div style="font-size: 24px; font-weight: bold;">{{ statistics.min_price }}</div>
+        <div style="font-size: 11px; color: #666;">{{ statistics.min_price_date }}</div>
+      </div>
+      
+      <div style="padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #6c757d;">
+        <div style="font-size: 12px; color: #666;">Средний объем</div>
+        <div style="font-size: 20px; font-weight: bold;">{{ "{:,.0f}".format(statistics.avg_volume) }}</div>
+      </div>
+      
+      <div style="padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #20c997;">
+        <div style="font-size: 12px; color: #666;">Ср. амплитуда</div>
+        <div style="font-size: 20px; font-weight: bold;">{{ statistics.avg_amplitude }}%</div>
+      </div>
+    </div>
+    <div style="margin-top: 12px; font-size: 12px; color: #666; text-align: center;">
+      Период: {{ statistics.first_date }} → {{ statistics.last_date }}
+    </div>
+  </div>
+
+  <!-- ОСНОВНОЙ график -->
+  <div class="card">
+    <h3>🕯️ Свечной график (с объемом)</h3>
+    <img src="{{ chart_uri }}" alt="candles chart">
+  </div>
+
+  <!-- ДОПОЛНИТЕЛЬНЫЙ график (НОВЫЙ) -->
+  <div class="card">
+    <h3> Дополнительный график: Объем торгов</h3>
+    <img src="{{ volume_chart_uri }}" alt="volume chart">
+    <p class="hint" style="margin-top: 10px;">
+      Зеленые столбцы — свеча закрылась выше открытия (рост)<br>
+       Красные столбцы — свеча закрылась ниже открытия (падение)
+    </p>
+  </div>
+
+  <!-- Таблица данных -->
+  <div class="card">
+    <h3> Последние строки таблицы</h3>
+    {{ table_html | safe }}
+  </div>
+
+  <p><a href="/">← Назад</a></p>
+{% endblock %}
